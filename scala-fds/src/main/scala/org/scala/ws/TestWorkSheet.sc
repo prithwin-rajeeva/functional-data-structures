@@ -1,2 +1,3 @@
-import org.scala.fds.SList
-SList(1,2,3,4,5)
+import org.scala.fds.SStream
+
+SStream.sieve(SStream.from(2)).take(100).toList

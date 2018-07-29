@@ -33,18 +33,18 @@ case class ::[+A](head:A,tail:SList[A]) extends SList[A] {
   }
 
   def <+>[B>:A](other:SList[B]):SList[B] = this match {
-    case ::(x,Nil) => ::(x,other)
+    case ::(x,Nill) => ::(x,other)
     case ::(x,xs) => ::(x,xs <+> other)
   }
 
   def size:Int = this match {
-    case ::(_,Nil) => 1
+    case ::(_,Nill) => 1
     case ::(_,xs) => 1 + xs.size
   }
 
 
 }
-case object Nil extends SList[Nothing] {
+case object Nill extends SList[Nothing] {
   def isEmpty: Boolean = true
   def <+[B](item:B):SList[B] = ::(item,SList.empty[B])
   def contains[B](item:B):Boolean = false
@@ -57,5 +57,5 @@ case object Nil extends SList[Nothing] {
 
 object SList {
   def apply[A](contents: A*): SList[A] = contents.foldLeft(SList.empty[A])((x, y) => x <+ y)
-  def empty[A]: SList[A] = Nil
+  def empty[A]: SList[A] = Nill
 }
