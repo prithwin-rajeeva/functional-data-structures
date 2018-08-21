@@ -32,6 +32,10 @@ trait SStream[+A] {
   }
 }
 object SStream {
+  /*
+    streams require this kind of constructor that builds and implementation of a trait because case classes cannot take
+    a thunk as a parameter
+   */
   def cons[A](hd: A, tl: => SStream[A]): SStream[A] = new SStream[A] {
     override def head:A = hd
     override def tail = tl
