@@ -1,6 +1,5 @@
-package org.scala.fds
+package org.scala.algo
 
-import org.scala.algo.ProductArray
 import org.scalatest.{FunSpec, Matchers}
 
 class ProductArraytest extends FunSpec with Matchers {
