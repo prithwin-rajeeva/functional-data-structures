@@ -9,4 +9,10 @@ class PermutationsTest extends FunSpec with Matchers {
       Permutations.permute(List(1,2,3,4)).foreach(println)
     }
   }
+
+  describe("parentheses generator") {
+    it("should generate all combinations of tree parens") {
+      Permutations.balanceParenteses(2).foreach(println)
+    }
+  }
 }
