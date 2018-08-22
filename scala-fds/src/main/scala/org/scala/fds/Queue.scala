@@ -4,6 +4,7 @@ trait QueueAdt[+T] {
   def put[U >: T](in:U):QueueAdt[U]
   def take:QueueAdt[T]
   def peek:T
+  def isEmpty:Boolean
 }
 
 case class NonEmptyQueue[+T](head:T,rest:QueueAdt[T]) extends QueueAdt[T] {
@@ -16,6 +17,7 @@ case class NonEmptyQueue[+T](head:T,rest:QueueAdt[T]) extends QueueAdt[T] {
     case NonEmptyQueue(_,EmptyQueue) => head
     case NonEmptyQueue(_,tl) => tl.peek
   }
+  override val isEmpty: Boolean = false
 }
 
 case object EmptyQueue extends QueueAdt[Nothing]{
@@ -23,6 +25,7 @@ case object EmptyQueue extends QueueAdt[Nothing]{
   override def take: QueueAdt[Nothing] = throw new IllegalAccessException("can't take anything from an empty" +
     " Queue")
   override def peek: Nothing = throw new IllegalAccessException("can't peek anything in a empty queue")
+  override val isEmpty: Boolean = true
 }
 
 object QueueAdt {
