@@ -1,8 +1,9 @@
 package org.scala.fds
+import scala.collection.immutable
 
 /**
   * simply binary tree that lets you some of the operations on a binary tree
-  * @tparam A
+  * @tparam A any type
   */
 trait BinaryTree[+A] {
   def left:BinaryTree[A]
@@ -18,7 +19,7 @@ trait BinaryTree[+A] {
   def tequals(obj: Any): Boolean
   def mirror:BinaryTree[A]
   def countLeaves:Int
-  def spiralOrderString:String = ???
+  def spiralOrderString:String
 }
 
 case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extends BinaryTree[A]{
@@ -36,7 +37,7 @@ case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extend
         val node = pq.peek
         node match {
           case Term => _loPrint(pq.take,res.:+(node.valueString))
-          case NonEmpty(v,l,r) => _loPrint(pq.take.put(l).put(r),res.:+(node.valueString))
+          case NonEmpty(_,l,r) => _loPrint(pq.take.put(l).put(r),res.:+(node.valueString))
         }
       }
     }
@@ -61,7 +62,22 @@ case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extend
     case NonEmpty(v,Term,r) => r.countLeaves
     case NonEmpty(v,l,r) =>  l.countLeaves + r.countLeaves
   }
+  override def spiralOrderString: String = {
+    def _loPrint(pq:QueueAdt[BinaryTree[A]],res:List[String],dir:Boolean):List[String] = {
+      if(pq.isEmpty) res
+      else {
+        val line = pq.toList
+        val level = line.map(_.valueString)
+        val nextQueue = line
+          .foldLeft(QueueAdt.empty[BinaryTree[A]])((a, b) => if(b != Term) a.put(b.left).put(b.right) else a)
+       _loPrint(nextQueue,res ++ (if(dir) level else level.reverse),!dir)
+      }
+    }
 
+    val printQueue = QueueAdt.empty[BinaryTree[A]]
+    _loPrint(printQueue.put(this),List.empty[String],true).filter(_!="").toString
+
+  }
 }
 
 case object Term extends BinaryTree[Nothing] {
@@ -82,6 +98,7 @@ case object Term extends BinaryTree[Nothing] {
   }
   override def mirror:BinaryTree[Nothing] = Term
   override def countLeaves: Int = throw new IllegalAccessException()
+  override def spiralOrderString: String = ""
 }
 
 object Node {
