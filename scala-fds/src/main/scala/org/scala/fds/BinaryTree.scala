@@ -20,6 +20,15 @@ trait BinaryTree[+A] {
   def mirror:BinaryTree[A]
   def countLeaves:Int
   def spiralOrderString:String
+  def isBst:Boolean
+  def allPaths:List[List[A]] = {
+    def _ap(node:BinaryTree[A]):List[List[A]] = node match {
+      case NonEmpty(v,Term,Term) => List(List(v))
+      case NonEmpty(v,l,r) =>  (_ap(l) ++ _ap(r)).map(path => path.+:(v))
+    }
+    _ap(this)
+  }
+
 }
 
 case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extends BinaryTree[A]{
@@ -30,20 +39,20 @@ case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extend
   override def height: Int = 1 + math.max(left.height,right.height)
   override def size: Int = 1+ left.size + right.size
   override def levelOrderString: String = {
-
     def _loPrint(pq:QueueAdt[BinaryTree[A]],res:List[String]):List[String] = {
       if(pq.isEmpty) res
       else {
-        val node = pq.peek
-        node match {
-          case Term => _loPrint(pq.take,res.:+(node.valueString))
-          case NonEmpty(_,l,r) => _loPrint(pq.take.put(l).put(r),res.:+(node.valueString))
-        }
+        val line = pq.toList
+        val level = line.map(_.valueString)
+        val nextQueue = line
+          .foldLeft(QueueAdt.empty[BinaryTree[A]])((a, b) => if(b != Term) a.put(b.left).put(b.right) else a)
+        _loPrint(nextQueue,res ++ level)
       }
     }
 
     val printQueue = QueueAdt.empty[BinaryTree[A]]
     _loPrint(printQueue.put(this),List.empty[String]).filter(_!="").toString
+
   }
   override def valueString: String = value.toString
 
@@ -78,6 +87,7 @@ case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extend
     _loPrint(printQueue.put(this),List.empty[String],true).filter(_!="").toString
 
   }
+  override def isBst: Boolean = false
 }
 
 case object Term extends BinaryTree[Nothing] {
@@ -99,6 +109,7 @@ case object Term extends BinaryTree[Nothing] {
   override def mirror:BinaryTree[Nothing] = Term
   override def countLeaves: Int = throw new IllegalAccessException()
   override def spiralOrderString: String = ""
+  override val isBst: Boolean = true
 }
 
 object Node {

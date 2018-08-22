@@ -45,6 +45,8 @@ class BinaryTreeTest extends FunSpec with Matchers {
       binaryTree.countLeaves should be(5)
       binaryTreeDup.countLeaves should be(5)
       randTree.countLeaves should be(4)
+      println(binaryTree.allPaths)
+
     }
   }
 }
