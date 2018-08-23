@@ -1,9 +1,9 @@
 package org.scala.fds
 
-import org.scalatest.FunSpec
+import org.scalatest.{FunSpec, Matchers}
 import org.scala.fds.SList._
 
-class ListTest extends FunSpec{
+class ListTest extends FunSpec with Matchers {
   describe("List") {
     it("empty List should say its empty") {
       assert(SList().isEmpty)
@@ -81,6 +81,25 @@ class ListTest extends FunSpec{
 
     it("equal lists should be identified as equal") {
       assert(SList(1,2,3,4) == SList(1,2,3,4))
+    }
+
+    it("it should be able to remove 3rd element from the end") {
+      println(SList(1,2,3,4,5,6).removeNthNodeFromEnd(3))
+    }
+
+    it("should throw and exception if you attempt to remove more elements than what exist in the list") {
+      (intercept[IllegalArgumentException] {SList(1,2,3,4,5,6).removeNthNodeFromEnd(30)}) should be(an[IllegalArgumentException])
+    }
+
+    it("should be able to flatMap operations on it") {
+      SList(1,5).flatMap(i => {
+        SList(i*1,i*2)
+      }) should be(SList(1,2,5,10))
+      Nill.flatMap(i => SList(i*1,i*2))
+    }
+
+    it("should be able to flatMap Operations on it") {
+      SList(1,2).map(_*2) should be (SList(2,4))
     }
   }
 }

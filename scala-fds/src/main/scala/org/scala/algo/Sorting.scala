@@ -13,4 +13,12 @@ object Sorting {
       selectionSort(in.slice(0, minPoint._2) ++ in.slice(minPoint._2 + 1, in.length)).+:(minPoint._1)
     }
   }
+
+  def mergeSort[T](in: Seq[T])(implicit ordering: Ordering[T]): Seq[T] = {
+    if (in.length <= 1) in
+    else {
+      val mid = in.length / 2
+      Merger.merge(mergeSort(in.slice(0, mid)), mergeSort(in.slice(mid, in.length)))
+    }
+  }
 }

@@ -15,6 +15,7 @@ trait BinaryTree[+A] {
   def height:Int
   def size:Int
   def levelOrderString:String
+  def levelOrderList:List[List[String]]
   def valueString:String
   def tequals(obj: Any): Boolean
   def mirror:BinaryTree[A]
@@ -88,6 +89,21 @@ case class NonEmpty[+A](value:A,left: BinaryTree[A],right: BinaryTree[A]) extend
 
   }
   override def isBst: Boolean = false
+
+  override def levelOrderList: List[List[String]] = {
+    def _loPrint(pq:QueueAdt[BinaryTree[A]],res:List[List[String]]):List[List[String]] = {
+      if(pq.isEmpty) res
+      else {
+        val line = pq.toList
+        val level = line.map(_.valueString)
+        val nextQueue = line.foldLeft(QueueAdt.empty[BinaryTree[A]])((a, b) => if(b != Term) a.put(b.left).put(b.right) else a)
+        _loPrint(nextQueue,res :+ level)
+      }
+    }
+
+    val printQueue = QueueAdt.empty[BinaryTree[A]]
+    _loPrint(printQueue.put(this),List.empty).filter(_.nonEmpty).map(_.filter(_!=""))
+  }
 }
 
 case object Term extends BinaryTree[Nothing] {
@@ -110,6 +126,7 @@ case object Term extends BinaryTree[Nothing] {
   override def countLeaves: Int = throw new IllegalAccessException()
   override def spiralOrderString: String = ""
   override val isBst: Boolean = true
+  override def levelOrderList: List[List[String]] = List(List.empty)
 }
 
 object Node {
