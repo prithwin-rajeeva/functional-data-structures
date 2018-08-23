@@ -3,6 +3,7 @@ package org.scala.fds
 case class Entry[K,V](key:K,value:V)
 
 trait SortedMap[K,V] {
+  //TODO: Find how to get implicitly better
   def +(key: K, value: V)(implicit ordering: Ordering[K]): SortedMap[K, V]
   def -(key: K)(implicit ordering: Ordering[K]): SortedMap[K, V]
   def apply(key: K)(implicit ordering: Ordering[K]): Option[V]

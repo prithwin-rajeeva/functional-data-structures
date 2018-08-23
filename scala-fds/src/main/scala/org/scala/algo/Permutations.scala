@@ -36,4 +36,19 @@ object Permutations {
 
     _balanceParenteses("", n, n, List.empty)
   }
+
+  def bizzaroBalanceParenteses(n: Int): List[String] = {
+    def _balanceParenteses(buf: String, st: Int, en: Int, result: List[String]): List[String] = {
+      if (st < en) result else {
+        if (st == 0 && en == 0) result :+ buf
+        else {
+          val starters = if (st > 0) _balanceParenteses(buf + "(", st - 1, en, result) else result
+          if (en > 0) _balanceParenteses(buf + ")", st, en - 1, starters) else starters
+        }
+      }
+
+    }
+
+    _balanceParenteses("", n, n, List.empty)
+  }
 }

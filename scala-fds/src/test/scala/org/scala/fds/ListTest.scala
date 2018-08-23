@@ -99,6 +99,13 @@ class ListTest extends FunSpec with Matchers {
 
     it("should be able to flatMap Operations on it") {
       SList(1,2).map(_*2) should be (SList(2,4))
+      println(SList(1,2,3).reverse)
+    }
+
+    it("should find Pallindrome") {
+      SList(1,2,2,1).isPalindrome should be(true)
+      SList(1,2,3,2,1).isPalindrome should be(true)
+      SList(1,2,3,2).isPalindrome should be(false)
     }
   }
 }

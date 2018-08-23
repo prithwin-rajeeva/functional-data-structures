@@ -18,6 +18,7 @@ trait SList[+A] {
   def map[B](f: A => B):SList[B]
   def flatMap[B](f: A => SList[B]):SList[B]
   def isPalindrome:Boolean
+  def reverse:SList[A]
 }
 
 case class ::[+A](head:A,tail:SList[A]) extends SList[A] {
@@ -51,25 +52,34 @@ case class ::[+A](head:A,tail:SList[A]) extends SList[A] {
   override def flatMap[B](f: A => SList[B]): SList[B] = {
     f(head) <+> tail.flatMap(f)
   }
-  override def isPalindrome: Boolean = ???
+  override def isPalindrome: Boolean = {
+    SList.areSame(this,this.reverse)
+  }
+  override def reverse: SList[A] = tail.reverse <+ head
 }
 
 case object Nill extends SList[Nothing] {
-  def isEmpty: Boolean = true
-  def <+[B](item:B):SList[B] = ::(item,SList.empty[B])
-  def contains[B](item:B):Boolean = false
-  def apply(index:Int) = throw new ArrayIndexOutOfBoundsException
-  def head = throw new ArrayIndexOutOfBoundsException
-  def tail = throw new ArrayIndexOutOfBoundsException
-  def <+>[B](other:SList[B]):SList[B] = other
-  val size:Int = 0
+  override def isEmpty: Boolean = true
+  override def <+[B](item:B):SList[B] = ::(item,SList.empty[B])
+  override def contains[B](item:B):Boolean = false
+  override def apply(index:Int) = throw new ArrayIndexOutOfBoundsException
+  override def head = throw new ArrayIndexOutOfBoundsException
+  override def tail = throw new ArrayIndexOutOfBoundsException
+  override def <+>[B](other:SList[B]):SList[B] = other
+  override val size:Int = 0
   override def removeNthNodeFromEnd(n: Int): SList[Nothing] = throw new IllegalAccessException()
   override def map[B](f: Nothing => B): SList[B] = Nill
   override def flatMap[B](f: Nothing => SList[B]): SList[B] = Nill
   override val isPalindrome:Boolean = false
+  override def reverse: SList[Nothing] = Nill
 }
 
 object SList {
   def apply[A](contents: A*): SList[A] = contents.foldLeft(SList.empty[A])((x, y) => x <+ y)
   def empty[A]: SList[A] = Nill
+  def areSame[A](thiz:SList[A],that:SList[A]):Boolean = {
+    if((thiz == Nill && that != Nill) || (that == Nill && thiz != Nill)) false
+    else if(thiz == Nill && that == Nill) true
+    else thiz.head == that.head && areSame(thiz.tail,that.tail)
+  }
 }

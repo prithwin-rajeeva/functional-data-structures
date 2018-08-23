@@ -5,6 +5,7 @@ trait StackAdt[+T] {
   def pop:StackAdt[T]
   def peek:T
   def size:Int
+  def isEmpty:Boolean
 }
 
 case class NonEmptyStack[+T](top:T,rest:StackAdt[T]) extends StackAdt[T] {
@@ -12,6 +13,7 @@ case class NonEmptyStack[+T](top:T,rest:StackAdt[T]) extends StackAdt[T] {
   override def pop: StackAdt[T] = rest
   override def peek: T = top
   override def size: Int = 1 + rest.size
+  override def isEmpty: Boolean = false
 }
 
 case object EmptyStack extends StackAdt[Nothing] {
@@ -19,6 +21,7 @@ case object EmptyStack extends StackAdt[Nothing] {
   override def pop: StackAdt[Nothing] = throw new IllegalAccessException("can't pop an empty stack")
   override def peek: Nothing = throw new IllegalArgumentException("can't peek and empty stack")
   override def size: Int = 0
+  override def isEmpty: Boolean = true
 }
 
 object StackAdt {
