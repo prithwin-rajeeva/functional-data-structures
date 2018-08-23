@@ -95,7 +95,6 @@ class ListTest extends FunSpec with Matchers {
       SList(1,5).flatMap(i => {
         SList(i*1,i*2)
       }) should be(SList(1,2,5,10))
-      Nill.flatMap(i => SList(i*1,i*2))
     }
 
     it("should be able to flatMap Operations on it") {
