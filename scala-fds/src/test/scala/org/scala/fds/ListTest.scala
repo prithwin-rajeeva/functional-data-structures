@@ -107,5 +107,10 @@ class ListTest extends FunSpec with Matchers {
       SList(1,2,3,2,1).isPalindrome should be(true)
       SList(1,2,3,2).isPalindrome should be(false)
     }
+
+    it("should be fold to sum") {
+      SList(1,1,1,1,1).foldLeft(0)(_ + _) should be(5)
+      SList(1,1,1,1,1).foldRight(0)(_ + _) should be(5)
+    }
   }
 }

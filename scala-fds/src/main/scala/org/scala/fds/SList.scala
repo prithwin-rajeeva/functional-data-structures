@@ -19,6 +19,8 @@ trait SList[+A] {
   def flatMap[B](f: A => SList[B]):SList[B]
   def isPalindrome:Boolean
   def reverse:SList[A]
+  def foldLeft[B >: A](z:B)(f: (A,B) => B):B
+  def foldRight[B >: A](z:B)(f: (A,B) => B):B
 }
 
 case class ::[+A](head:A,tail:SList[A]) extends SList[A] {
@@ -56,6 +58,8 @@ case class ::[+A](head:A,tail:SList[A]) extends SList[A] {
     SList.areSame(this,this.reverse)
   }
   override def reverse: SList[A] = tail.reverse <+ head
+  override def foldLeft[B >: A](z: B)(f: (A, B) => B): B = {tail.foldLeft(f(head,z))(f)}
+  override def foldRight[B >: A](z: B)(f: (A, B) => B): B = f(head,tail.foldRight(z)(f))
 }
 
 case object Nill extends SList[Nothing] {
@@ -72,6 +76,8 @@ case object Nill extends SList[Nothing] {
   override def flatMap[B](f: Nothing => SList[B]): SList[B] = Nill
   override val isPalindrome:Boolean = false
   override def reverse: SList[Nothing] = Nill
+  override def foldLeft[B >: Nothing](z: B)(f: (Nothing, B) => B): B = z
+  override def foldRight[B >: Nothing](z: B)(f: (Nothing, B) => B): B = z
 }
 
 object SList {

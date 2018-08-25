@@ -21,4 +21,25 @@ object Sorting {
       Merger.merge(mergeSort(in.slice(0, mid)), mergeSort(in.slice(mid, in.length)))
     }
   }
+
+  def bubbleSort[T](arr: Array[T])(implicit ordering: Ordering[T]): Array[T] = {
+
+    def _bs(sp: Int, arr: Array[T]): Array[T] = {
+      if (sp == arr.length) arr
+      else {
+        var i = arr.length - 1
+        while (i > sp) {
+          if (ordering.gt(arr(i - 1), arr(i))) {
+            var temp = arr(i - 1)
+            arr(i - 1) = arr(i)
+            arr(i) = temp
+          }
+          i -= 1
+        }
+        _bs(sp + 1, arr)
+      }
+    }
+
+    _bs(0, arr)
+  }
 }

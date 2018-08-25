@@ -47,17 +47,17 @@ class TreeSortedMap[K,V](root:TreeMapNode[K,V]) extends SortedMap[K,V] {
   }
 
   override def -(key: K)(implicit ordering: Ordering[K]): SortedMap[K, V] = {
-    def min(rt:TreeMapNode[K,V]):Entry[K,V] = {
+    def inorderSuccessor(rt:TreeMapNode[K,V]):Entry[K,V] = {
       if(rt.left.isEmpty && rt.right.isEmpty) rt.node
       else {
-        min(rt.left)
+        inorderSuccessor(rt.left)
       }
     }
 
-    def truncate(rt: TreeMapNode[K, V]): TreeMapNode[K,V] = {
+    def removeInOrderSuccessor(rt: TreeMapNode[K, V]): TreeMapNode[K,V] = {
       if(rt.left.isEmpty && rt.right.isEmpty) new <>
       else  {
-        NonEmptyTreeMapNode(rt.node,truncate(rt.left),rt.right)
+        NonEmptyTreeMapNode(rt.node,removeInOrderSuccessor(rt.left),rt.right)
       }
     }
 
@@ -71,7 +71,7 @@ class TreeSortedMap[K,V](root:TreeMapNode[K,V]) extends SortedMap[K,V] {
           if(rt.left.isEmpty) rt.right
           else if(rt.right.isEmpty) rt.right
           else {
-            NonEmptyTreeMapNode(min(rt.right),rt.left,truncate(rt.right))
+            NonEmptyTreeMapNode(inorderSuccessor(rt.right),rt.left,removeInOrderSuccessor(rt.right))
           }
         }
       } else {

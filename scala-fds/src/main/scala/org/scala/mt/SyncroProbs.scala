@@ -1,15 +1,16 @@
 package org.scala.mt
 
-import java.util.concurrent.{CountDownLatch, LinkedBlockingDeque, TimeUnit}
+import java.util.concurrent.{CountDownLatch, Executors, LinkedBlockingDeque, TimeUnit}
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.{Condition, Lock, ReentrantLock}
 
 import com.sun.tools.javadoc.Start
 
-import scala.collection.immutable
+import scala.collection.{immutable, mutable}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future, Promise}
+import scala.util.{Failure, Success}
 
 object SyncroProbs {
 
@@ -106,9 +107,115 @@ object SyncroProbs {
     prom.future
   }
 
+  def pingara():Unit = {
+    val countDownLatch = new CountDownLatch(2)
+    val lock = new ReentrantLock
+    val ponger = lock.newCondition()
+    val pong = new AtomicBoolean(false)
+    Future{
+      (1 to 100).foreach{_ =>
+        lock.lock()
+        while(pong.get) ponger.await
+        println("PING")
+        pong.set(true)
+        ponger.signalAll
+        lock.unlock()
+      }
+      countDownLatch.countDown()
+    }
+
+    Future{
+      (1 to 100).foreach{_=>
+        lock.lock()
+        while(!pong.get) ponger.await
+        println("PONG")
+        pong.set(false)
+        ponger.signalAll
+        lock.unlock()
+      }
+      countDownLatch.countDown()
+    }
+
+    countDownLatch.await()
+  }
+
+  def oneAfterOther():Unit = {
+    println("this is going to make a lot of difference what we do here")
+    val countDownLatch = new CountDownLatch(2)
+    val t1 = new Thread(new Runnable {
+      override def run(): Unit = (1 to 50 ).foreach(println)
+    })
+    val t2= new Thread(new Runnable {
+      override def run(): Unit = (1 to 50 ).foreach(println)
+    })
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
+
+  }
+
+  def prodcon():Unit = {
+    val mutableQueue: mutable.Queue[Int] = scala.collection.mutable.Queue[Int](5)
+    val mutex = new ReentrantLock
+    val full = mutex.newCondition()
+    val empty = mutex.newCondition()
+
+    val c = new CountDownLatch(2)
+    Future {
+      (1 to 100).foreach { i =>
+        Thread.sleep(1000)
+        println(s"enqueing $i")
+        try {
+          if (mutableQueue.length > 100) throw new IllegalStateException()
+          mutex.lock()
+          while(mutableQueue.length > 100) full.await()
+          mutableQueue.enqueue(i)
+          empty.signal()
+          mutex.unlock()
+      }catch {
+          case e => println(e)
+        }
+
+      }
+      c.countDown()
+    }
+
+    Future {
+      (1 to 100).foreach { i =>
+        Thread.sleep(1000)
+        try {
+          mutex.lock()
+          while(mutableQueue.length < 1) empty.await()
+          println(s"dequeing ${mutableQueue.dequeue()}")
+          full.signal()
+          mutex.unlock()
+        }catch {
+          case e => println(e)
+        }
+      }
+      c.countDown()
+    }
+    c.await()
+
+  }
+
+  def everyFutureOperationEver(): Unit = {
+    val myfut = Future {
+      1
+    }
+    val x = myfut.failed
+    for (y <- x) yield (println(y))
+    println()
+  }
+
   def main(args: Array[String]): Unit = {
 //    twoThreadTurnBased
-    threadPoolSimulator
+    //threadPoolSimulator
 //    promiseDemo
+    //pingara
+    //oneAfterOther
+//    prodcon
+    everyFutureOperationEver
   }
 }
