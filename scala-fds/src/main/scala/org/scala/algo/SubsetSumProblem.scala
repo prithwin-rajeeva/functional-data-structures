@@ -20,5 +20,6 @@ object SubsetSumProblem {
       }
       i += 1
     }
+    false
   }
 }

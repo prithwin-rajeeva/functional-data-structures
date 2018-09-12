@@ -108,35 +108,47 @@ object SyncroProbs {
   }
 
   def pingara():Unit = {
-    val countDownLatch = new CountDownLatch(2)
-    val lock = new ReentrantLock
-    val ponger = lock.newCondition()
-    val pong = new AtomicBoolean(false)
-    Future{
-      (1 to 100).foreach{_ =>
-        lock.lock()
-        while(pong.get) ponger.await
-        println("PING")
-        pong.set(true)
-        ponger.signalAll
-        lock.unlock()
-      }
-      countDownLatch.countDown()
-    }
+    class NB {
+      val lock = new ReentrantLock
+      val pingOrPong = new AtomicBoolean(true)
+      val change = lock.newCondition
 
-    Future{
-      (1 to 100).foreach{_=>
-        lock.lock()
-        while(!pong.get) ponger.await
-        println("PONG")
-        pong.set(false)
-        ponger.signalAll
-        lock.unlock()
+      def writer(action:String):Unit = {
+          lock.lock()
+          if(action == "ping") {
+            while(pingOrPong.get() == false) change.await()
+          } else {
+            while(pingOrPong.get() == true) change.await()
+          }
+          println(action)
+          pingOrPong.set(if(action == "ping") false else true)
+          change.signalAll()
+          lock.unlock()
       }
-      countDownLatch.countDown()
     }
+    val nb = new NB
 
-    countDownLatch.await()
+    val t1 = new Thread(new Runnable {
+      override def run(): Unit = {
+        (0 to 100).foreach(_ => {
+          nb.writer("ping")
+        })
+      }
+    })
+
+
+    val t2 = new Thread(new Runnable {
+      override def run(): Unit = {
+        (0 to 100).foreach(_ => {
+          nb.writer("pong")
+        })
+      }
+    })
+    t1.start
+    t2.start
+    t1.join
+    t2.join
+
   }
 
   def oneAfterOther():Unit = {
@@ -213,9 +225,9 @@ object SyncroProbs {
 //    twoThreadTurnBased
     //threadPoolSimulator
 //    promiseDemo
-    //pingara
+    pingara
     //oneAfterOther
 //    prodcon
-    everyFutureOperationEver
+//    everyFutureOperationEver
   }
 }
