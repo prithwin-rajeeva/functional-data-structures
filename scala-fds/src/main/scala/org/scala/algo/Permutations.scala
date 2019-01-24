@@ -22,6 +22,23 @@ object Permutations {
     _p(Seq.empty,in,Seq.empty)
   }
 
+
+  def permute(nums: Array[Int]): List[List[Int]] = {
+    def _p(
+            lead:List[Int],
+            rest:List[Int],
+            acc:List[List[Int]]):List[List[Int]] = {
+      if(rest.isEmpty) acc :+ lead
+      else {
+        rest.zipWithIndex.flatMap {
+          case (num, i) => _p(lead :+ num, rest.slice(0,i) ++ rest.slice(i+1,rest.length),acc)
+        }
+      }
+    }
+    _p(List.empty[Int],nums.toList,List.empty[List[Int]])
+
+  }
+
   def balanceParenteses(n: Int): List[String] = {
     def _balanceParenteses(buf: String, st: Int, en: Int, result: List[String]): List[String] = {
       if (st > en) result else {
@@ -50,5 +67,9 @@ object Permutations {
     }
 
     _balanceParenteses("", n, n, List.empty)
+  }
+
+  def main(args: Array[String]): Unit = {
+    println(permute(Array(1,2,3,4)))
   }
 }

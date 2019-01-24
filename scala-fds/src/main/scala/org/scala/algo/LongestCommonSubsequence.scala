@@ -1,10 +1,29 @@
 package org.scala.algo
 
+import scala.collection.mutable
+
 object LongestCommonSubsequence {
-  def measure(thiz: String, that: String): Int = {
-    if (thiz == "" || that == "") 0
-    else if (thiz.charAt(0) == that.charAt(0)) 1 + measure(thiz.substring(1), that.substring(1))
-    else math.max(measure(thiz.substring(1), that), measure(thiz, that.substring(1)))
+  type Input = (String,String)
+  val reg = mutable.HashMap.empty[Input,Int]
+
+  def memGet(thiz:String,that:String):Int = {
+    if(reg.contains((thiz,that))) {
+      println(s"hit $thiz $that")
+      reg((thiz,that))}
+    else {
+      reg((thiz,that)) = measure(thiz,that)
+      reg(thiz,that)
+    }
+  }
+  def measure(thiz:String,that:String):Int = {
+    if(thiz.isEmpty || that.isEmpty) 0
+    else {
+      if(thiz.head == that.head) {
+        1 + memGet(thiz.substring(1),that.substring(1))
+      } else {
+        math.max(memGet(thiz.substring(1),that),memGet(thiz,that.substring(1)))
+      }
+    }
   }
 
   def measureDp(thiz: String, that: String): Int = {

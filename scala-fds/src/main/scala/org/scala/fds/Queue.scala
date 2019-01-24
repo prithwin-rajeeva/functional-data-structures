@@ -8,7 +8,7 @@ trait QueueAdt[+T] {
   def isEmpty:Boolean
   def length:Int
   def toList:List[T] = self match {
-    case EmptyQueue => Nil
+    case EmptyQueue => scala.Nil
     case NonEmptyQueue(a,b) => b.toList.:+(a)
   }
 }

@@ -225,9 +225,27 @@ object SyncroProbs {
 //    twoThreadTurnBased
     //threadPoolSimulator
 //    promiseDemo
-    pingara
+   // pingara
     //oneAfterOther
 //    prodcon
 //    everyFutureOperationEver
+
+    def comb(in: String): List[String] = {
+      println(in)
+      in match {
+        case unit if unit.length <= 1 => List(unit)
+        case nz =>
+          nz.indices.toList.flatMap(
+            i => comb(nz.substring(0, i) + nz.substring(i, nz.length))
+          )
+
+      }
+    }
+
+
+    val g = comb("abcd")
   }
+
+
+
 }

@@ -9,6 +9,7 @@ lazy val root = (project in file(".")).
     )),
     name := "Hello",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.16"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.16",
+    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.27"
 
 )

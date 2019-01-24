@@ -26,7 +26,7 @@ trait SStream[+A] {
 
   def toList:List[A] = {
     if(tail == SStream.empty)
-      head :: Nil
+      head :: scala.Nil
     else
       head :: tail.toList
   }

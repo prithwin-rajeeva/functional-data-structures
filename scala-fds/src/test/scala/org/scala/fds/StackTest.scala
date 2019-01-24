@@ -24,5 +24,9 @@ class StackTest extends FunSpec with Matchers{
       multiElementStack.pop.pop.pop.pop should matchPattern{case EmptyStack =>}
 
     }
+    it("should reverse the stack") {
+      val multiElementStack = StackAdt.empty.push(1).push(2).push(3).push(4).reverse
+      println(multiElementStack)
+    }
   }
 }

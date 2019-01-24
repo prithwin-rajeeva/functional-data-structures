@@ -21,6 +21,14 @@ trait SList[+A] {
   def reverse:SList[A]
   def foldLeft[B >: A](z:B)(f: (A,B) => B):B
   def foldRight[B >: A](z:B)(f: (A,B) => B):B
+  def groupBy[B](f: A => B): scala.collection.immutable.Map[B, List[A]] = {
+    def _gB(rem: SList[A], map: scala.collection.immutable.Map[B, List[A]]): scala.collection.immutable.Map[B, List[A]] = rem match {
+      case Nill => map
+      case ::(head,tail) => if(map.contains(f(head))) _gB(tail,map + (f(head) -> map(f(head)).+:(head))) else _gB(tail,map + (f(head) -> List.empty[A].+:(head)))
+    }
+    _gB(this,Map.empty[B,List[A]])
+  }
+
 }
 
 case class ::[+A](head:A,tail:SList[A]) extends SList[A] {
